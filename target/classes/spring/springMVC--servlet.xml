@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+	    http://www.springframework.org/schema/mvc
+	    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+	    http://www.springframework.org/schema/context
+	    http://www.springframework.org/schema/context/spring-context.xsd
+	    http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+
+    <context:component-scan base-package="Com.CB.Production.controller"/>
+
+    <!-- 注解驱动  启动注解识别 -->
+    <mvc:annotation-driven  conversion-service="conversionService"/>
+
+    <mvc:default-servlet-handler/>
+
+
+    <!-- 开启aop，对类代理 -->
+    <aop:config proxy-target-class="true"/>
+
+    <!-- 配置内部资源视图解析器，要求将jstl的包加到classpath -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    <!-- 资源映射 -->
+    <mvc:resources location="/WEB-INF/css/" mapping="/css/**"/>
+    <mvc:resources location="/WEB-INF/js/" mapping="/js/**"/>
+    <mvc:resources location="/WEB-INF/image/" mapping="/image/**"/>
+    <mvc:resources location="/WEB-INF/attached/"    mapping="/attached/**"   />
+
+    <!-- 定义文件上传解析器 -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 设定默认编码 -->
+        <property name="defaultEncoding" value="UTF-8"/>
+
+        <!-- 设定文件上传的最大值20MB，20*1024*1024 -->
+        <property name="maxUploadSize" value="20971520"/>
+    </bean>
+
+    <!-- 自定义转换器 -->
+    <bean id="conversionService"
+          class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+
+        <property name="converters">
+            <set>
+                <bean class="Com.CB.Production.controller.converter.CustomDateConverter"/>
+                <bean class="Com.CB.Production.controller.converter.StringTrimConverter"/>
+            </set>
+        </property>
+    </bean>
+
+    <!-- 定义统一异常处理器 -->
+    <bean class="Com.CB.Production.exception.CustomExceptionResolver"/>
+
+</beans>

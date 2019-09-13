@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Com.CB.Production.Mapper.authority.SysPermissionMapperCustom">
+
+    <!-- 根据用户id查询菜单 ，菜单是在系统认证表格上的值，不是字段，这里第一次碰见使用值的，type关键字
+         使用了3张表，系统认证《======》系统用户权限《===》系统用户，
+         要清楚输入的变量是在哪张表，输出的变量是在哪张表
+    -->
+    <select id="findMenuListByUserId" parameterType="String" resultType="Com.CB.Production.domain.authority.SysPermission">
+        SELECT * from sys_permission WHERE  type = 'menu' AND  id IN
+          (SELECT sys_permission_id from sys_role_permission WHERE  sys_role_id IN
+              (SELECT sys_role_id FROM  sys_user_role WHERE sys_user_id = #{id})
+          )
+    </select>
+
+    <!-- 根据用户id查询权限id -->
+    <select id="findPermissionByUseriId" resultType="String" parameterType="String">
+        select sys_permission_id from sys_role_permission WHERE sys_role_id IN
+        (select sys_role_id from sys_user_role WHERE sys_user_id =#{userid})
+    </select>
+
+    <!--//根据用户id查询url-->
+    <select id="findPermissionByUserId" parameterType="String" resultType="Com.CB.Production.domain.authority.SysPermission">
+         select * from sys_permission WHERE id IN
+         (select sys_permission_id from sys_role_permission WHERE sys_role_id IN
+            (select sys_role_id from sys_user_role WHERE sys_user_id =#{userid})
+          )
+    </select>
+
+</mapper>
